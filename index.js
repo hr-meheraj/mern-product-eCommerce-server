@@ -22,8 +22,16 @@ async function run() {
 		const orders = eCommerceDb.collection("orders");
 		app.get('/products', async (req,res) => {
 			const query = {};
-			const result = await products.find(query).toArray();
+			const page = parseInt(req.query.page);
+			const size = parseInt(req.query.size);
+			const result = await 
+            products.find(query).skip(size * page).limit(size).toArray();
 			res.send(result);
+		});
+
+		app.get('/productsCount', async(req,res) => {
+			const count =await products.estimatedDocumentCount();
+			res.send({count});
 		})
 		// Delete a product from UI 
 		app.delete('/products/:id', async (req,res) => {
@@ -57,6 +65,11 @@ async function run() {
 			const response = await orders.insertOne(body);
 			res.send(response);
 		});
+			// for pagination 
+			// Secure with Json web Token => 
+		  app.get('/login', (req,res) => {
+				
+			});
 
 		
   } finally {
